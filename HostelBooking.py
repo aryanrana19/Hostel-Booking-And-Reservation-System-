@@ -24,6 +24,16 @@ class Hostel:
         if self.available_rooms > 0:
             self.available_rooms -= 1
             print("Room booked successfully!")
+            # Ask for user information
+            user_name = input("Enter your name: ")
+            user_age = input("Enter your age: ")
+            contact_number = input("Enter your contact number: ")
+            # Display user information
+            print("\nUser Information:")
+            print(f"Name: {user_name}")
+            print(f"Age: {user_age}")
+            print(f"Contact Number: {contact_number}")
+            print(f"Hostel Enrolled in: {self.name}")
         else:
             print("No rooms available.")
 
@@ -126,3 +136,4 @@ class HostelBookingSystem:
 if __name__ == "__main__":
     system = HostelBookingSystem()
     system.main_menu()
+
