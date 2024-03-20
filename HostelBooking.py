@@ -20,6 +20,13 @@ class Hostel:
         print(f"WiFi Availability: {'Yes' if self.wifi_available else 'No'}")
         print(border)
 
+    def book_room(self):
+        if self.available_rooms > 0:
+            self.available_rooms -= 1
+            print("Room booked successfully!")
+        else:
+            print("No rooms available.")
+
 
 class BoysHostel(Hostel):
     def __init__(self, name, total_rooms, available_rooms, timings, mess_available, laundry_available, wifi_available):
@@ -77,11 +84,14 @@ class HostelBookingSystem:
 
     def book_room(self):
         hostel_name = input("Enter hostel name: ")
+        found = False
         for hostel in self.hostels:
             if hostel.name == hostel_name:
                 hostel.book_room()
-                return
-        print("Hostel not found.")
+                found = True
+                break
+        if not found:
+            print("Hostel not found.")
 
     def main_menu(self):
         while True:
