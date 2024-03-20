@@ -59,12 +59,14 @@ class GirlsHostel(Hostel):
         super().__init__(name, total_rooms, available_rooms, timings, mess_available, laundry_available, wifi_available)
 
 
+# MONGODB CONNECTIONS
 class HostelBookingSystem:
     def __init__(self):
         self.hostels = []
         self.client = MongoClient('mongodb://localhost:27017/')
         self.db = self.client['hostel_booking_system']
         self.users_collection = self.db['users']
+        self.hostels_collection = self.db['hostels']
 
     def create_boys_hostel(self):
         name = input("Enter boys hostel name: ")
@@ -74,8 +76,18 @@ class HostelBookingSystem:
         mess_available = input("Is mess available? (yes/no): ").lower() == "yes"
         laundry_available = input("Is laundry available? (yes/no): ").lower() == "yes"
         wifi_available = input("Is WiFi available? (yes/no): ").lower() == "yes"
-        hostel = BoysHostel(name, total_rooms, available_rooms, timings, mess_available, laundry_available, wifi_available)
-        self.hostels.append(hostel)
+        hostel_data = {
+            'name': name,
+            'total_rooms': total_rooms,
+            'available_rooms': available_rooms,
+            'timings': timings,
+            'mess_available': mess_available,
+            'laundry_available': laundry_available,
+            'wifi_available': wifi_available,
+            'type': 'boys'
+        }
+        self.hostels_collection.insert_one(hostel_data)
+        print("Boys hostel created and stored in the database.")
 
     def create_girls_hostel(self):
         name = input("Enter girls hostel name: ")
@@ -85,8 +97,18 @@ class HostelBookingSystem:
         mess_available = input("Is mess available? (yes/no): ").lower() == "yes"
         laundry_available = input("Is laundry available? (yes/no): ").lower() == "yes"
         wifi_available = input("Is WiFi available? (yes/no): ").lower() == "yes"
-        hostel = GirlsHostel(name, total_rooms, available_rooms, timings, mess_available, laundry_available, wifi_available)
-        self.hostels.append(hostel)
+        hostel_data = {
+            'name': name,
+            'total_rooms': total_rooms,
+            'available_rooms': available_rooms,
+            'timings': timings,
+            'mess_available': mess_available,
+            'laundry_available': laundry_available,
+            'wifi_available': wifi_available,
+            'type': 'girls'
+        }
+        self.hostels_collection.insert_one(hostel_data)
+        print("Girls hostel created and stored in the database.")
 
     def display_boys_hostel_info(self):
         found = False
@@ -126,7 +148,8 @@ class HostelBookingSystem:
             print("4. Display Girls Hostel Information")
             print("5. Book Room")
             print("6. Display Booked Users")
-            print("7. Exit")
+            print("7. Display Hostels")
+            print("8. Exit")
             choice = input("Enter your choice: ")
             try:
                 choice = int(choice)
@@ -143,12 +166,47 @@ class HostelBookingSystem:
                 elif choice == 6:
                     self.display_booked_users()
                 elif choice == 7:
+                    self.display_hostels()
+                elif choice == 8:
                     print("Exiting program.")
                     break
                 else:
-                    print("Invalid choice. Please enter a number between 1 and 7.")
+                    print("Invalid choice. Please enter a number between 1 and 8.")
             except ValueError:
                 print("Invalid input. Please enter a number.")
+
+
+# FETCHING MONGODB DATA
+
+def display_boys_hostel_info(self):
+    boys_hostels = self.hostels_collection.find({'type': 'boys'})
+    if boys_hostels.count() == 0:
+        print("No boys hostel information available.")
+    else:
+        print("Boys Hostel Information:")
+        for hostel in boys_hostels:
+            self.display_hostel_info(hostel)
+
+def display_girls_hostel_info(self):
+    girls_hostels = self.hostels_collection.find({'type': 'girls'})
+    if girls_hostels.count() == 0:
+        print("No girls hostel information available.")
+    else:
+        print("Girls Hostel Information:")
+        for hostel in girls_hostels:
+            self.display_hostel_info(hostel)
+
+def display_hostel_info(self, hostel):
+    border = "=" * 40
+    print(border)
+    print(f"Hostel Name: {hostel['name']}")
+    print(f"Total Rooms: {hostel['total_rooms']}")
+    print(f"Available Rooms: {hostel['available_rooms']}")
+    print(f"Timings: {hostel['timings']}")
+    print(f"Mess Availability: {'Yes' if hostel['mess_available'] else 'No'}")
+    print(f"Laundry Availability: {'Yes' if hostel['laundry_available'] else 'No'}")
+    print(f"WiFi Availability: {'Yes' if hostel['wifi_available'] else 'No'}")
+    print(border)
 
 
 def display_booked_users(self):
