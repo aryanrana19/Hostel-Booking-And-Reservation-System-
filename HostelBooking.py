@@ -1,3 +1,9 @@
+from pymongo import MongoClient
+
+client = MongoClient('mongodb://localhost:27017/')
+db = client['hostel_booking_system']
+users_collection = db['users']
+
 class Hostel:
     def __init__(self, name, total_rooms, available_rooms, timings, mess_available, laundry_available, wifi_available):
         self.name = name
@@ -28,14 +34,19 @@ class Hostel:
             user_name = input("Enter your name: ")
             user_age = input("Enter your age: ")
             contact_number = input("Enter your contact number: ")
-            # Display user information
-            print("\nUser Information:")
-            print(f"Name: {user_name}")
-            print(f"Age: {user_age}")
-            print(f"Contact Number: {contact_number}")
-            print(f"Hostel Enrolled in: {self.name}")
+            # Store user information in MongoDB
+            user_data = {
+                'name': user_name,
+                'age': user_age,
+                'contact_number': contact_number,
+                'hostel': self.name
+            }
+            users_collection.insert_one(user_data)
+            print("User information stored in the database.")
         else:
             print("No rooms available.")
+
+            
 
 
 class BoysHostel(Hostel):
@@ -51,6 +62,9 @@ class GirlsHostel(Hostel):
 class HostelBookingSystem:
     def __init__(self):
         self.hostels = []
+        self.client = MongoClient('mongodb://localhost:27017/')
+        self.db = self.client['hostel_booking_system']
+        self.users_collection = self.db['users']
 
     def create_boys_hostel(self):
         name = input("Enter boys hostel name: ")
@@ -111,7 +125,8 @@ class HostelBookingSystem:
             print("3. Display Boys Hostel Information")
             print("4. Display Girls Hostel Information")
             print("5. Book Room")
-            print("6. Exit")
+            print("6. Display Booked Users")
+            print("7. Exit")
             choice = input("Enter your choice: ")
             try:
                 choice = int(choice)
@@ -126,12 +141,25 @@ class HostelBookingSystem:
                 elif choice == 5:
                     self.book_room()
                 elif choice == 6:
+                    self.display_booked_users()
+                elif choice == 7:
                     print("Exiting program.")
                     break
                 else:
-                    print("Invalid choice. Please enter a number between 1 and 6.")
+                    print("Invalid choice. Please enter a number between 1 and 7.")
             except ValueError:
                 print("Invalid input. Please enter a number.")
+
+
+def display_booked_users(self):
+        booked_users = self.users_collection.find()
+        if booked_users.count() == 0:
+            print("No users have booked rooms yet.")
+        else:
+            print("Users who have booked rooms:")
+            for user in booked_users:
+                print(f"Name: {user['name']}, Age: {user['age']}, Contact: {user['contact_number']}, Hostel: {user['hostel']}")
+
 
 if __name__ == "__main__":
     system = HostelBookingSystem()
