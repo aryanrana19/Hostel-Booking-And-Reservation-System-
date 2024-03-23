@@ -117,7 +117,18 @@ class HostelBookingSystem:
         # edited
         results = self.hostels_collection.find()
         results_list = list(results)
-       
+        temp1=[]
+        temp2=[]
+        for i in results_list:
+            #print("element:",type(i),i)
+           #print("type",type(i['name']))
+           if i['name'] not in temp1:
+               temp1.append(i['name'].lower())
+               temp2.append(i)
+
+        print("Unique elements:",temp2)
+        results_list=temp2
+
 
         if(len(results_list) == 0):
             print("No boys hostel information available.")
@@ -248,5 +259,3 @@ def display_booked_users(self):
 if __name__ == "__main__":
     system = HostelBookingSystem()
     system.main_menu()
-
-
