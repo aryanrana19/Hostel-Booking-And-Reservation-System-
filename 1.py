@@ -91,18 +91,70 @@ class HostelBookingSystem:
                 print(f"Laundry Availability: {'Yes' if result['laundry_available'] else 'No'}")
                 print(f"WiFi Availability: {'Yes' if result['wifi_available'] else 'No'}")
                 print(border)
+        
+    def display_hostel_info_filtered(self):
+        hostel_type = input("Enter 'boys' or 'girls' to display hostel information: ").lower()
+        while hostel_type not in ['boys', 'girls']:
+            hostel_type = input("Invalid input. Please enter 'boys' or 'girls': ").lower()
+
+        filter_options = {
+            '1': 'available_rooms',
+            '2': 'mess_available',
+            '3': 'laundry_available',
+            '4': 'wifi_available'
+        }
+
+        print("Select a filter option:")
+        for option, field in filter_options.items():
+            print(f"{option}. {field.replace('_', ' ').capitalize()}")
+
+        filter_choice = input("Enter your choice (or '0' to quit): ").lower()
+
+        if filter_choice == '0':
+            return
+
+        if filter_choice not in filter_options:
+            print("Invalid choice. Please try again.")
+            return self.display_hostel_info_filtered()
+
+        filter_field = filter_options[filter_choice]
+        filter_value = input(f"Enter the value for '{filter_field.replace('_', ' ')}' (yes/no: Select one): ").lower()
+
+        if filter_field in ['mess_available', 'laundry_available', 'wifi_available']:
+            filter_value = filter_value == 'yes'
+
+        results = self.hostels_collection.find({"type": hostel_type, filter_field: filter_value})
+        results_list = list(results)
+
+        if len(results_list) == 0:
+            print(f"No {hostel_type} hostels found with the specified filter.")
+        else:
+            for result in results_list:
+                border = "=" * 40
+                print(border)
+                print(f"Hostel Name: {result['name']}")
+                print(f"Total Rooms: {result['total_rooms']}")
+                print(f"Available Rooms: {result['available_rooms']}")
+                print(f"Timings: {result['timings']}")
+                print(f"Mess Availability: {'Yes' if result['mess_available'] else 'No'}")
+                print(f"Laundry Availability: {'Yes' if result['laundry_available'] else 'No'}")
+                print(f"WiFi Availability: {'Yes' if result['wifi_available'] else 'No'}")
+                print(border)
 
 
     def book_room(self):
-        hostel_name = input("Enter hostel name: ")
-        found = False
-        for hostel in self.hostels:
-            if hostel.name == hostel_name:
-                hostel.book_room()
-                found = True
-                break
-        if not found:
-            print("Hostel not found.")
+        hostel_name = input("Enter the name to book the hostel: ")
+        hostel = self.hostels_collection.find_one({"name": hostel_name})
+
+        new_available_rooms = hostel['available_rooms'] - 1
+        update_query = {
+            "$set": {
+                "available_rooms": int(new_available_rooms)
+            }
+        }
+
+        self.hostels_collection.update_one({"name": hostel_name}, update_query)
+        print(f"A room in '{hostel_name}' has been booked successfully.")
 
 
     def remove_hostel(self):
@@ -149,10 +201,11 @@ class HostelBookingSystem:
             print("\nMain Menu:")
             print("1. Create Hostel")
             print("2. Display Hostel Information")
-            print("3. Book Room")
-            print("4. Remove a hostel")
-            print("5. Update Hostel Information")
-            print("6. Exit")
+            print("3. Filter Hostels")
+            print("4. Book Room")
+            print("5. Remove a hostel")
+            print("6. Update Hostel Information")
+            print("7. Exit")
             choice = input("Enter your choice: ")
             try:
                 choice = int(choice)
@@ -161,12 +214,14 @@ class HostelBookingSystem:
                 elif choice == 2:
                     self.display_hostel_info()
                 elif choice == 3:
-                    self.book_room()
+                    self.display_hostel_info_filtered()
                 elif choice == 4:
-                    self.remove_hostel()
+                    self.book_room()
                 elif choice == 5:
-                    self.update_hostel_info()
+                    self.remove_hostel()
                 elif choice == 6:
+                    self.update_hostel_info()
+                elif choice == 7:
                     print("Exiting program.")
                     break
                 else:
