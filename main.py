@@ -230,7 +230,10 @@ class HostelBookingSystem:
                 print(f"Hostels with Mess: {mess_available}, Laundry: {laundry_available}, WiFi: {wifi_available}")
                 print(f"Count: {count}")
                 for hostel in hostels:
-                    print(f"  - Name: {hostel['name']}, Total Rooms: {hostel['total_rooms']}, Available Rooms: {hostel['available_rooms']}, Timings: {hostel['timings']}")
+                    border = "=" * 50
+                    print(border)
+                    print(f"Name: {hostel['name']}\nTotal Rooms: {hostel['total_rooms']}\nAvailable Rooms: {hostel['available_rooms']}\nTimings: {hostel['timings']}")
+                    print(border)
                 print()
 
     def main_menu(self):
@@ -243,7 +246,7 @@ class HostelBookingSystem:
             print("5. Update Hostel Information")
             print("6. Count Total of Hostels")
             print("7. Filter Hostels by filter")
-            print("8. Group Hostels By ")
+            print("8. Group Hostels")
             print("0. Exit")
             choice = input("Enter your choice: ")
             try:
