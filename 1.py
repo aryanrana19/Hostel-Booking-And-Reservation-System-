@@ -91,22 +91,21 @@ class HostelBookingSystem:
                 print(f"Laundry Availability: {'Yes' if result['laundry_available'] else 'No'}")
                 print(f"WiFi Availability: {'Yes' if result['wifi_available'] else 'No'}")
                 print(border)
-        
+
     def display_hostel_info_filtered(self):
         hostel_type = input("Enter 'boys' or 'girls' to display hostel information: ").lower()
         while hostel_type not in ['boys', 'girls']:
             hostel_type = input("Invalid input. Please enter 'boys' or 'girls': ").lower()
 
         filter_options = {
-            '1': 'available_rooms',
-            '2': 'mess_available',
-            '3': 'laundry_available',
-            '4': 'wifi_available'
+            'mess': 'Mess Availability',
+            'laundry': 'Laundry Availability',
+            'wifi': 'WiFi Availability'
         }
 
         print("Select a filter option:")
         for option, field in filter_options.items():
-            print(f"{option}. {field.replace('_', ' ').capitalize()}")
+            print(f"{option.capitalize()}. {field}")
 
         filter_choice = input("Enter your choice (or '0' to quit): ").lower()
 
@@ -117,11 +116,10 @@ class HostelBookingSystem:
             print("Invalid choice. Please try again.")
             return self.display_hostel_info_filtered()
 
-        filter_field = filter_options[filter_choice]
-        filter_value = input(f"Enter the value for '{filter_field.replace('_', ' ')}' (yes/no: Select one): ").lower()
+        filter_field = f"{filter_choice}_available"
+        filter_value = input(f"Enter 'yes' if you want hostels with {filter_options[filter_choice]} or 'no' if you don't want: ").lower()
 
-        if filter_field in ['mess_available', 'laundry_available', 'wifi_available']:
-            filter_value = filter_value == 'yes'
+        filter_value = filter_value == 'yes'
 
         results = self.hostels_collection.find({"type": hostel_type, filter_field: filter_value})
         results_list = list(results)
@@ -136,11 +134,8 @@ class HostelBookingSystem:
                 print(f"Total Rooms: {result['total_rooms']}")
                 print(f"Available Rooms: {result['available_rooms']}")
                 print(f"Timings: {result['timings']}")
-                print(f"Mess Availability: {'Yes' if result['mess_available'] else 'No'}")
-                print(f"Laundry Availability: {'Yes' if result['laundry_available'] else 'No'}")
-                print(f"WiFi Availability: {'Yes' if result['wifi_available'] else 'No'}")
+                print(f"{filter_options[filter_choice]}: {'Yes' if result[filter_field] else 'No'}")
                 print(border)
-
 
     def book_room(self):
         hostel_name = input("Enter the name to book the hostel: ")
@@ -173,12 +168,12 @@ class HostelBookingSystem:
 
         if hostel:
             print("Enter the updated values")
-            new_total_rooms = input(f"Total Rooms (current: {hostel['total_rooms']}): ") 
-            new_available_rooms = input(f"Available Rooms (current: {hostel['available_rooms']}): ")
-            new_timings = input(f"Timings (current: {hostel['timings']}): ")
-            new_mess_available = input(f"Mess Available? (current: {'Yes' if hostel['mess_available'] else 'No'}): ").lower() in ['yes', 'y']
-            new_laundry_available = input(f"Laundry Available? (current: {'Yes' if hostel['laundry_available'] else 'No'}): ").lower() in ['yes', 'y']
-            new_wifi_available = input(f"WiFi Available? (current: {'Yes' if hostel['wifi_available'] else 'No'}): ").lower() in ['yes', 'y']
+            new_total_rooms = input(f"Total Rooms: ") 
+            new_available_rooms = input(f"Available Rooms: ")
+            new_timings = input(f"Timings: ")
+            new_mess_available = input(f"Mess Available?: ").lower() in ['yes', 'y']
+            new_laundry_available = input(f"Laundry Available?: ").lower() in ['yes', 'y']
+            new_wifi_available = input(f"WiFi Available?: ").lower() in ['yes', 'y']
 
             update_query = {
                 "$set": {
@@ -231,7 +226,6 @@ class HostelBookingSystem:
 
 
 # FETCHING MONGODB DATA
-
 
 if __name__ == "__main__":
     system = HostelBookingSystem()
