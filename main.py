@@ -196,7 +196,7 @@ class HostelBookingSystem:
                 print(f"WiFi Availability: {'Yes' if result['wifi_available'] else 'No'}")
                 print(border)
 
-    def group_hostels_by_amenities(self):
+    def group_hostels(self):
         pipeline = [
             {
                 "$group": {
@@ -238,7 +238,9 @@ class HostelBookingSystem:
 
     def main_menu(self):
         while True:
-            print("\nMain Menu:")
+            border = "-" * 40
+            print(border)
+            print("Main Menu:")
             print("1. Create Hostel")
             print("2. Display Hostel Information")
             print("3. Book Room")
@@ -248,6 +250,7 @@ class HostelBookingSystem:
             print("7. Filter Hostels by filter")
             print("8. Group Hostels")
             print("0. Exit")
+            print(border)
             choice = input("Enter your choice: ")
             try:
                 choice = int(choice)
@@ -266,7 +269,7 @@ class HostelBookingSystem:
                 elif choice == 7:
                     self.search_hostels_by_filter()
                 elif choice == 8:
-                    self.group_hostels_by_amenities()
+                    self.group_hostels()
                 elif choice == 0:
                     print("Exiting program.")
                     break
